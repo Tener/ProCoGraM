@@ -1,0 +1,31 @@
+Projekt 5 - generowanie muzyki poprzez ewaluację drzew gramatyk probabilistycznych - podobnych do tych, które służą do parsowania języka naturalnego.
+
+Opis programu:
+
+1. Pojedyncza gramatyka służy do generowania utworu muzycznego - lub pojedynczej linii melodycznej takowego.
+2. Program działa na zasadzie iteracji. Na każdym kroku z gramatyki wyjściowej generowane są gramatyki pochodne, które oceniane są przez użytkownika.
+3. Ocena polega na odsłuchaniu wygenerowanego utworu i oddaniu głosu.
+4. Gramatyki w pierwszym kroku są zupełnie losowe. Użytkownik wybiera kierunek rozwoju muzyki
+5. W dowolnym momencie stan programu można zapisać do pliku i później wznowić wedle uznania.
+6. Obsługiwana jest też historia - można się cofać i przechodzić do przodu.
+7. Wybraną gramatykę można odsłuchać w sposób ciągły. Można też zapisać próbkę dźwiękową do pliku.
+
+Semantyka gramatyk:
+
+1. Istnieje skończony zbiór symboli terminalnych. Każdy z nich określa pewien dźwięk (lub pauzę) wraz z jego długością trwania itp.
+2. Gramatyka zawiera symbol startowy S.
+3. Dla każdego symbolu nieterminalnego E istnieje grupa produkcji bezkontekstowych postaci E -> W*, gdzie W* jest ciągiem zera lub więcej symboli (terminalnych lub nieterminalnych). Każda z produkcji ma przypisane prawdopodobieństwo wystąpienia, a wszystkie one sumują się do 1 (dla każdego symbolu E).
+4. Świeże symbole nieterminalne mogą być wprowadzane go gramatyki w razie potrzeby na drodze mutacji.
+
+5. Aby gramatyka była poprawna, dla każdego symbolu nieterminalnego powinno istnieć niezerowe prawdopodobieństwo wygenerowania symbolu terminalnego. W przeciwnym wypadku maszyna generująca muzykę zapętli się.
+
+5. Dla każdego symbolu albo:
+5.1. Oczekiwana pozycja pierwszego symbolu terminalnego wygenerowanego z niego po pełnym rozwinięciu jest skończona.
+5.2. Symbol przechodzi w ciąg pusty.
+
+6. Powyższy warunek nie jest niestety wystarczający. Przykład: { S -> St }
+
+Generowanie muzyki:
+5. Muzyka generowana jest przez ewaluację stanu maszyny.
+6. Stanem początkowym jest nieskończony ciąg symboli startowych: SSSSS....
+7. Na każdym kroku ewaluacji usuwamy pierwszy symbol ze stanu maszyny. Jeżeli jest to terminal, to przesyłamy go do odegrania. W przeciwnym wypadku (nieterminal) wybieramy losowo produkcję którą mamy zastosować i umieszczamy wynik produkcji na początku zapisu.

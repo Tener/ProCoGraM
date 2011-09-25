@@ -1,0 +1,25 @@
+Name:                ProCoGraM
+Version:             0.1
+Synopsis:            PRObabilistic COntext-free GRAmmar Music generation
+Homepage:            http://github.com/Tener/ProCoGraM
+License:             BSD3
+License-file:        LICENSE
+Author:              Krzysztof Skrzętnicki
+Maintainer:          gtener@gmail.com
+Category:            Sound
+Build-type:          Simple
+Cabal-version:       >=1.2
+
+Executable procogram
+  Main-is:             Main.hs
+  Other-modules:       Grammar, Song, Util
+  Build-depends:       base > 4,
+                       array,
+                       containers,
+                       mtl,
+                       process,
+                       random,
+                       split,
+                       stm, mwc-random, mwc-random-monad, primitive, haskore, old-locale, time, filepath
+  Ghc-options:         -threaded -rtsopts -O2
+  Hs-source-dirs:      src
