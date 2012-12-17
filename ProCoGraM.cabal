@@ -21,6 +21,6 @@ Executable procogram
                        random,
                        split,
                        vector,
-                       stm, mwc-random > 0.2, mwc-random-monad, primitive, haskore, old-locale, time, filepath
+                       stm, mwc-random, mwc-random-monad == 0.3, primitive, haskore, old-locale, time, filepath
   Ghc-options:         -threaded -rtsopts -O2
   Hs-source-dirs:      src
