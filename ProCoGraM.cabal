@@ -20,6 +20,7 @@ Executable procogram
                        process,
                        random,
                        split,
+                       vector,
                        stm, mwc-random, mwc-random-monad, primitive, haskore, old-locale, time, filepath
   Ghc-options:         -threaded -rtsopts -O2
   Hs-source-dirs:      src
