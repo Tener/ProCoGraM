@@ -261,7 +261,7 @@ digraph %s {
 
   print terminals
   
-  let prefix = ["digraph " ++ (takeFileName fn)++ "{",
+  let prefix = ["digraph " ++ (takeBaseName fn)++ "{",
                 "ratio = \"auto\" ;",
                 ""]
 
