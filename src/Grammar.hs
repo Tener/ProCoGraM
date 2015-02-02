@@ -50,6 +50,7 @@ nextTerminal gr song = let go 0 _ = return Nothing
                                         go (n-1) (ss' ++ ss)
                          in go 100000 song
 
+-- | generate music piece 'count' notes long from given grammar
 generateMusicPiece :: Int -> Grammar -> Song -> RandIO MusicPiece
 generateMusicPiece count gr song0 = let go 0 acc _song = return $ composeSong (reverse acc)
                                         go n acc song = do
@@ -73,13 +74,21 @@ mut1, mut2, mut3, mut4 :: Grammar -> RandIO Grammar
 cleanupGrammar :: Grammar -> Grammar
 cleanupGrammar = cleanupBranches . pruneGrammar
 
+-- -- | get total sum of probabilities, adjust them so that it is 1.
+-- normalizeProbabilities :: Grammar -> Grammar
+-- normalizeProbabilities gr = let sum' :: Double
+--                                 sum' = sum $ map (snd . snd) $ Map.toList gr
+--                                 gr' :: Grammar
+--                                 gr' = Map.map (\(song,p) -> (song,(p/sum'))) gr
+--                             in gr'
+
 mut :: Grammar -> Rand IO Grammar
-mut gr = choices [(50,mut1 gr)
+mut gr = cleanupGrammar `fmap`
+         choices [(50,mut1 gr)
                  ,(20,mut2 gr)
                  ,(10,mut3 gr)
                  ,(30,mut4 gr)
-                 ,(30,mut =<< mut gr)
-                 ,(1,return (cleanupGrammar gr))]
+                 ]
 
 randomProduction :: Grammar -> RandIO Song
 randomProduction gr = do

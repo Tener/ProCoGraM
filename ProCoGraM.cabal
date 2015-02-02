@@ -10,6 +10,22 @@ Category:            Sound
 Build-type:          Simple
 Cabal-version:       >=1.2
 
+Executable procogram-generate-sample-tones
+  Main-is:             GenerateSampleTones.hs
+  Other-modules:       Grammar, Song, Util
+  Build-depends:       base > 4,
+                       array,
+                       containers,
+                       mtl,
+                       process,
+                       random,
+                       split,
+                       vector,
+                       stm, mwc-random, mwc-random-monad == 0.3, primitive, haskore, old-locale, time, filepath, directory
+  Ghc-options:         -threaded -rtsopts -O2
+  Hs-source-dirs:      src
+
+
 Executable procogram
   Main-is:             Main.hs
   Other-modules:       Grammar, Song, Util

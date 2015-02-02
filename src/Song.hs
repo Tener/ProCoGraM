@@ -27,7 +27,7 @@ type MusicPiece = MIDI.T
 
 baseSongs :: [MIDI.T]
 -- baseSongs = map (MIDI.fromMelodyNullAttr MIDI.AcousticGrandPiano) cMaj
-baseSongs = concat [ map (MIDI.fromMelodyNullAttr ins) (cMaj++notes) | ins <- instr ]
+baseSongs = concat [ map (MIDI.fromMelodyNullAttr ins) ({- cMaj++ -} notes) | ins <- instr ]
 
 -- cMaj' :: [T ()]
 --baseConc = line baseSongs
@@ -38,15 +38,14 @@ randomNote = do
   song' <- equiprobable' baseSongs
   drum' <- equiprobable' notesDrum
   liftR (print (song',drum'))
-  choices' [ (4,TD song' 1)
-           , (3,TD song' 2)
-           , (2,TD song' 3) 
-           , (2,TD song' 4) 
-           , (5,TD drum' 5)]
+  -- TODO: extension point
+  choices' [ (1024,TD song' 1)
+           , (512,TD song' 2)
+           , (256,TD song' 3) 
+           , (128,TD song' 4) 
+           , (64,TD drum' 5)]
   
--- staccato = articulation . Staccato $ qn
--- legato   = articulation . Legato   $ qn
-
+-- TODO: extension point
 composeSong :: [TerminalData] -> MusicPiece
 composeSong tds = let chan1 = line . map (chord . f1). splitEvery 2 . map song . Prelude.filter ((==1) . channel) $ tds
                       chan2 = line . map (chord . f2). splitEvery 2 . map song . Prelude.filter ((==2) . channel) $ tds
@@ -54,7 +53,7 @@ composeSong tds = let chan1 = line . map (chord . f1). splitEvery 2 . map song .
                       chan4 = line . map (chord . f4). splitEvery 2 . map song . Prelude.filter ((==4) . channel) $ tds
                       chan5 = line . map (chord . f5). splitEvery 2 . map song . Prelude.filter ((==5) . channel) $ tds
 
-                      f1 = id
+                      f1 = f4
 
                       f2 (x:xs) = ((staccato qn x):xs)
                       f2 [] = []
@@ -67,10 +66,10 @@ composeSong tds = let chan1 = line . map (chord . f1). splitEvery 2 . map song .
 
                       f5 xs = f4 (Prelude.reverse xs)
 
-                  in chord [chan1,chan2,chan3,chan4,chan5]
+                  in chord [chan1,chan2,chan3,chan4,chan5] -- ,chan4,chan5]
 
 -- playSong :: Maybe a -> (Maybe String) -> MusicPiece -> IO ()
-playSong time _graph info (changeTempo 4 -> t) = do
+playSong time _graph info (changeTempo 2 -> t) = do
   let fmt = formatTimeExt time "mid"
       fmt2 = formatTimeExt time "txt"
       fmt3 = formatTimeExt time "svg"
@@ -88,7 +87,10 @@ playSong time _graph info (changeTempo 4 -> t) = do
 -- with timidity
 --  R.playTimidity t >> return ()
 -- with fluidsynth
-  let soundfont = "soundfont/Unison.SF2"
+  -- TODO: extension point
+  let -- soundfont = "soundfont/Unison.sf2"
+      soundfont = "soundfont/PC51f.sf2"
+      -- soundfont = "/usr/share/soundfonts/FluidR3_GM2-2.sf2"
   rawSystem "fluidsynth" [soundfont, fmt, ("-F"++fmt4)]
   rawSystem "mplayer" [fmt4]
 
@@ -105,7 +107,17 @@ instrTest = do
            playSong now Nothing Nothing set
         ) instr
 
-instr = [ MIDI.AcousticBass
+-- TODO: extension point
+instr = [ MIDI.Flute
+        , MIDI.Piccolo
+        , MIDI.ElectricPiano1
+        , MIDI.ElectricPiano2
+        , MIDI.AcousticGuitarNylon
+        , MIDI.AcousticGuitarSteel
+        ] 
+          
+
+instr0 = [ MIDI.AcousticBass
         , MIDI.AcousticGuitarSteel
         , MIDI.ElectricGuitarJazz
         , MIDI.ElectricGuitarClean
@@ -249,7 +261,16 @@ res f _ dur _ = f dur
 allOct = [0..2]
 allDur = [wn,wn,wn,hn,hn,hn,hn,qn,qn,qn,en,en,en]
 
-notes = [ n oct dur () | n <- allNotes, oct <- allOct, dur <- allDur]
+-- TODO: extension point
+notes = [ n oct dur () | n <- [c,
+           d,
+           e,
+           f,
+           g,
+           a,
+           b], oct <- allOct, dur <- [en,qn,hn]]
+
+-- notes = [ n oct dur () | n <- allNotes, oct <- allOct, dur <- allDur]
 
 
 notesDrum = [ Drum.toMusicDefaultAttr dr dur | dur <- allDur, dr <- myDrumSet ] 

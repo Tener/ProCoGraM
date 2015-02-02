@@ -17,7 +17,7 @@ main = do
   go mutStep emptyGrammar
 
 mutStep :: Integer
-mutStep = 250
+mutStep = 500
 
 go :: Integer -> Grammar -> IO ()
 go 0 gr = do
