@@ -21,7 +21,8 @@ Executable procogram-generate-sample-tones
                        random,
                        split,
                        vector,
-                       stm, mwc-random, mwc-random-monad == 0.3, primitive, haskore, old-locale, time, filepath, directory
+                       stm, mwc-random, mwc-random-monad, primitive, monad-primitive, transformers,
+                       haskore, old-locale, time, filepath, directory
   Ghc-options:         -threaded -rtsopts -O2
   Hs-source-dirs:      src
 
@@ -37,6 +38,7 @@ Executable procogram
                        random,
                        split,
                        vector,
-                       stm, mwc-random, mwc-random-monad == 0.3, primitive, haskore, old-locale, time, filepath
+                       stm, mwc-random, mwc-random-monad, primitive, monad-primitive, transformers,
+                       haskore, old-locale, time, filepath
   Ghc-options:         -threaded -rtsopts -O2
   Hs-source-dirs:      src

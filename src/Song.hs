@@ -5,6 +5,7 @@
 module Song where
 
 import System.Random.MWC.Monad -- Control.Monad.Mersenne.Random
+import Control.Monad.Trans.Class
 
 import Haskore.Melody
 import Haskore.Music.GeneralMIDI as MIDI hiding (drum)
@@ -37,7 +38,7 @@ randomNote :: RandIO TerminalData
 randomNote = do
   song' <- equiprobable' baseSongs
   drum' <- equiprobable' notesDrum
-  liftR (print (song',drum'))
+  lift (print (song',drum'))
   -- TODO: extension point
   choices' [ (1024,TD song' 1)
            , (512,TD song' 2)
@@ -91,6 +92,7 @@ playSong time _graph info (changeTempo 2 -> t) = do
   let -- soundfont = "soundfont/Unison.sf2"
       soundfont = "soundfont/PC51f.sf2"
       -- soundfont = "/usr/share/soundfonts/FluidR3_GM2-2.sf2"
+      -- soundfont = "/usr/share/sounds/sf2/FluidR3_GM.sf2"
   rawSystem "fluidsynth" [soundfont, fmt, ("-F"++fmt4)]
   rawSystem "mplayer" [fmt4]
 
