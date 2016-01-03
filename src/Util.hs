@@ -2,6 +2,7 @@ module Util where
 
 import System.Random.MWC.Monad
 import Control.Monad.Primitive
+import Control.Monad.Primitive.Class
 import qualified Data.Map as Map
 import Data.Map(Map)
 import Data.Time
@@ -14,7 +15,7 @@ import qualified Data.Vector.Unboxed as U
 import Debug.Trace
 
 -- | Randomly select from list of equiprobable random sources. List must be non-empty
-equiprobable :: PrimMonad m => [Rand m a] -> Rand m a
+equiprobable :: (PrimMonad m, MonadPrim m) => [Rand m a] -> Rand m a
 equiprobable [] = error "System.Random.MWC.Monad.equiprobable: list must be nonempty"
 equiprobable xs = worker (V.fromList xs)
   where
@@ -26,7 +27,7 @@ equiprobable xs = worker (V.fromList xs)
 -- | Randomly select from list of weighted random sources. List must
 -- contain sources with positive weight. Elements with non-positive
 -- weight are discarded
-choices :: PrimMonad m => [(Double,Rand m a)] -> Rand m a
+choices :: (PrimMonad m, MonadPrim m) => [(Double,Rand m a)] -> Rand m a
 choices xs
   | null xs'  = error "System.Random.MWC.Monad.choices: list must contain at least one nonnegative weight"
   | otherwise = --aceShow (ps, V.length vect) 
@@ -61,15 +62,17 @@ binaryRange v x = loop
 
 -- end of functions from mwc monad 0.2
 
+-- Functions dropped from mwc monad 0.3 to 0.7
 
-choices' :: PrimMonad m => [(Double, a)] -> Rand m a
+
+choices' :: (PrimMonad m, MonadPrim m) => [(Double, a)] -> Rand m a
 choices' xs = choices [ (x, return y) | (x,y) <- xs]
 
 
-equiprobable' :: PrimMonad m => [a] -> Rand m a
+equiprobable' :: (PrimMonad m, MonadPrim m) => [a] -> Rand m a
 equiprobable' xs = equiprobable (map return xs)
 
-modifyRandomElement :: PrimMonad m => [a] -> (a -> Rand m (Maybe a)) -> Rand m [a]
+modifyRandomElement :: (PrimMonad m, MonadPrim m) => [a] -> (a -> Rand m (Maybe a)) -> Rand m [a]
 modifyRandomElement xs f = do
   let l = length xs
   i <- if l > 0 then uniformR (0,l-1) else return 0
@@ -79,7 +82,7 @@ modifyRandomElement xs f = do
     Nothing -> return (pre ++ post)
     Just el'New -> return (pre ++ (el'New : post))
 
-modifyRandomElementList :: PrimMonad m => [a] -> (a -> Rand m [a]) -> Rand m [a]
+modifyRandomElementList :: (PrimMonad m, MonadPrim m) => [a] -> (a -> Rand m [a]) -> Rand m [a]
 modifyRandomElementList xs f = do
   let l = length xs
   i <- if l > 0 then uniformR (0,l-1) else return 0
@@ -87,13 +90,13 @@ modifyRandomElementList xs f = do
   el' <- f el
   return (pre ++ el' ++ post)
 
-modifyRandomKey :: (Ord k, PrimMonad m) => Map k v -> (v -> Rand m (Maybe v)) -> Rand m (Map k v)
+modifyRandomKey :: (Ord k, PrimMonad m, MonadPrim m) => Map k v -> (v -> Rand m (Maybe v)) -> Rand m (Map k v)
 modifyRandomKey mapa fun = do
   (k,v) <- equiprobable' (Map.assocs mapa)
   v' <- fun v
   return $ Map.update (const v') k mapa
 
-modifyRandomKeyElement :: (Ord k, PrimMonad m) => Map k [a] -> (a -> Rand m (Maybe a)) -> Rand m (Map k [a])
+modifyRandomKeyElement :: (Ord k, PrimMonad m, MonadPrim m) => Map k [a] -> (a -> Rand m (Maybe a)) -> Rand m (Map k [a])
 modifyRandomKeyElement m f = modifyRandomKey m (\xs -> fmap Just $ modifyRandomElement xs f)
 
 formatTimeExt now ext = formatTime defaultTimeLocale ("/tmp/foo_%s." ++ ext) now
